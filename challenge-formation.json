@@ -13,12 +13,9 @@
 
 		},
 		"EC2InstanceType" : {
-			"Default" : "m1.small",
+			"Default" : "m1.large",
+			"Description" : "We default to m1.large for expedience.",
 			"Type" : "String"
-		},
-		"SSHKey" : {
-			"Default" : "3770pub",
-			"Type" : "String"	
 		}
 	},
 
@@ -27,16 +24,14 @@
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
 				"ImageId" : { "Ref" : "AWSImageID" },
-				"KeyName" : { "Ref" : "SSHKey" },
 				"SecurityGroups" : [ { "Ref" : "TC7SecurityGroup" } ],
 				"InstanceType" : { "Ref" : "EC2InstanceType" },
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
             		"#!/bin/bash -ex","\n",
             		"yum -y install tomcat7","\n",
             		"cd  /var/lib/tomcat7/webapps","\n",
-            		"wget ", { "Ref" : "warURL" },"-O ROOT.war","\n",
-            		"WAR=", { "Ref" : "warURL" },"\n",
-            		"chown root.tomcat $WAR","\n",
+            		"wget ", { "Ref" : "warURL" }," -O ROOT.war","\n",
+            		"chown root.tomcat ROOT.war","\n",
             		"service tomcat7 start","\n" ]]}
 				}
 			}
