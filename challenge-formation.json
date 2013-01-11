@@ -34,7 +34,7 @@
             		"#!/bin/bash -ex","\n",
             		"yum -y install tomcat7","\n",
             		"cd  /var/lib/tomcat7/webapps","\n",
-            		"wget ", { "Ref" : "warURL" },"\n",
+            		"wget ", { "Ref" : "warURL" },"-O ROOT.war","\n",
             		"WAR=", { "Ref" : "warURL" },"\n",
             		"chown root.tomcat $WAR","\n" ]]}
 				}
@@ -46,17 +46,16 @@
 	      	"Properties" : {
 		        "GroupDescription" : "Enable HTTP access via port 8080 and SSH via 22",
 		        "SecurityGroupIngress" : [ 
-		        	{ "IpProtocol" : "tcp","FromPort" : "8080","ToPort" : "8080","CidrIp" : "0.0.0.0/0"	},
-		        	{ "IpProtocol" : "tcp","FromPort" : "22","ToPort" : "22","CidrIp" : "0.0.0.0/0"	}
+		        	{ "IpProtocol" : "tcp","FromPort" : "8080","ToPort" : "8080","CidrIp" : "0.0.0.0/0"	}
 	        	]
 	    	}
     	}
 	},
 
 	"Outputs" : {
-		"PublicIP" : {
-		      "Description" : "Public IP address.",
-		      "Value" : { "Fn::GetAtt" : [ "TC7Instance", "PublicIp" ] }
+		"URL" : {
+		      "Description" : "Public URL.",
+		      "Value" :  { "Fn::Join" : [ "", [ "http://", { "Fn::GetAtt" : [ "TC7Instance", "PublicIp" ]}, ":8080"]]}
 		}
 	}
 }
