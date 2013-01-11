@@ -15,6 +15,10 @@
 		"EC2InstanceType" : {
 			"Default" : "m1.small",
 			"Type" : "String"
+		},
+		"SSHKey" : {
+			"Default" : "3770pub",
+			"Type" : "String"	
 		}
 	},
 
@@ -22,15 +26,17 @@
 		"TC7Instance" : {
 			"Type" : "AWS::EC2::Instance",
 			"Properties" : {
-				"ImageId" : { "Ref": "AWSImageID" }, 
+				"ImageId" : { "Ref" : "AWSImageID" },
+				"KeyName" : { "Ref" : "SSHKey" },
 				"SecurityGroups" : [ { "Ref" : "TC7SecurityGroup" } ],
 				"InstanceType" : { "Ref" : "EC2InstanceType" },
 				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["",[
             		"#!/bin/bash -ex","\n",
             		"yum -y install tomcat7","\n",
-            		"cd  /opt/tomcat7/webapps","\n",
-            		"curl ", { "Ref" : "warURL" },"\n",
-            		"service tomcat7 restart","\n" ]]}
+            		"cd  /var/lib/tomcat7/webapps","\n",
+            		"wget ", { "Ref" : "warURL" },"\n",
+            		"WAR=", { "Ref" : "warURL" },"\n",
+            		"chown root.tomcat $WAR","\n" ]]}
 				}
 			}
 		},
@@ -38,13 +44,11 @@
 		"TC7SecurityGroup" : {
 	    	"Type" : "AWS::EC2::SecurityGroup",
 	      	"Properties" : {
-		        "GroupDescription" : "Enable HTTP access via port 8080",
-		        "SecurityGroupIngress" : [ {
-					"IpProtocol" : "tcp",
-					"FromPort" : "8080",
-					"ToPort" : "8080",
-					"CidrIp" : "0.0.0.0/0"
-				} ]
+		        "GroupDescription" : "Enable HTTP access via port 8080 and SSH via 22",
+		        "SecurityGroupIngress" : [ 
+		        	{ "IpProtocol" : "tcp","FromPort" : "8080","ToPort" : "8080","CidrIp" : "0.0.0.0/0"	},
+		        	{ "IpProtocol" : "tcp","FromPort" : "22","ToPort" : "22","CidrIp" : "0.0.0.0/0"	}
+	        	]
 	    	}
     	}
 	},
