@@ -36,7 +36,8 @@
             		"cd  /var/lib/tomcat7/webapps","\n",
             		"wget ", { "Ref" : "warURL" },"-O ROOT.war","\n",
             		"WAR=", { "Ref" : "warURL" },"\n",
-            		"chown root.tomcat $WAR","\n" ]]}
+            		"chown root.tomcat $WAR","\n",
+            		"service tomcat7 start","\n" ]]}
 				}
 			}
 		},
